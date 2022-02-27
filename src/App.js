@@ -7,23 +7,7 @@ function App() {
   const [finalGuess, setFinalGuess] = useState("");
   const [isGuessing, setIsGuessing] = useState(true);
   const [currentWordle, setCurrentWordle] = useState("trace");
-  const [livesLeft, setLivesLeft] = useState(6);
-  // const [displayTiles, setDisplayTiles] = useState([
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  //   { key: 1, value: [" X ", " X ", " X ", " X ", " X "] },
-  // ]);
-
+  const [livesUsed, setLivesUsed] = useState(-1);
   const [tileValues, setTileValues] = useState([
     { value: [-1, -1, -1, -1, -1], key: 0 },
     { value: [-1, -1, -1, -1, -1], key: 1 },
@@ -41,28 +25,48 @@ function App() {
   }
 
   useEffect(() => {
-    let temp = [];
-    for (let i = 0; i < 5; i++) {
-      let found = false;
-      for (let j = 0; j < 5; j++) {
-        if (finalGuess[i] == currentWordle[j]) {
-          found = true;
-          if (i == j) {
-            //console.log(finalGuess[j]);
-            temp.push(2);
-          } else {
-            temp.push(1);
+    if (livesUsed === -1) {
+      setLivesUsed(0);
+    } else {
+      let temp = [];
+      for (let i = 0; i < 5; i++) {
+        let found = false;
+        for (let j = 0; j < 5; j++) {
+          if (finalGuess[i] === currentWordle[j]) {
+            found = true;
+            if (i === j) {
+              //console.log(finalGuess[j]);
+              temp.push(2);
+            } else {
+              temp.push(1);
+            }
           }
         }
+        //IF NOTHING IS FOUND, ADD 0 TO Temp
+        if (found === false) {
+          temp.push(0);
+        }
       }
-      //IF NOTHING IS FOUND, ADD 0 TO Temp
-      if (found == false) {
-        temp.push(0);
-      }
+      let valTemp = { value: temp, key: livesUsed };
+      const tempVals = [...tileValues];
+      tempVals[livesUsed] = valTemp;
+      setLivesUsed(livesUsed + 1);
+      const testArray = [
+        { value: [1, 1, 1, 1, 1], key: 0 },
+        { value: [-1, -1, -1, -1, -1], key: 1 },
+        { value: [-1, -1, -1, -1, -1], key: 2 },
+        { value: [-1, -1, -1, -1, -1], key: 3 },
+        { value: [-1, -1, -1, -1, -1], key: 4 },
+        { value: [-1, -1, -1, -1, -1], key: 5 },
+      ];
+      //setTileValues(testArray);
+      //setTileValues(tempVals);
+      console.log(testArray === tempVals);
+      console.log(tempVals);
+      console.log(testArray);
     }
-    submitFinalGuess(temp);
-    //console.log(temp);
   }, [finalGuess]);
+
   // need this function and currentGues state to display current value
   function handleGuessChange(e) {
     setCurrentGuess(e);
@@ -71,7 +75,6 @@ function App() {
   // ie. is it a word, no nums, right lenth,etc.
   function submitFinalGuess(wordValues) {
     setIsGuessing(false);
-    setLivesLeft(livesLeft - 1);
     for (let i = 0; i < 5; i++) {
       if (wordValues[i] == 0) {
       }
